@@ -6,12 +6,12 @@
 #include "token.h"
 #include "ast.h"
 
-\\ Parser header
+//Parser header
 class Parser {
 public:
     Parser(const std::vector<Token>& tokens);
 
-    std::unique_ptr<Stmt> parse();
+    Program parse();
 
 private:
     std::vector<Token> tokens;
@@ -20,6 +20,12 @@ private:
 
     void advance();
 
+    std::vector<std::unique_ptr<Expr>> parseArguments();
+    std::vector<std::string> parseParameters();
+    std::unique_ptr<Stmt> parseFunctionDecl();
+    std::vector<std::unique_ptr<Stmt>> parseBlock();
+    std::unique_ptr<Stmt> parseReturn();
+    std::unique_ptr<Stmt> parseAssignment();
     std::unique_ptr<Expr> parseExpression();
     std::unique_ptr<Expr> parseTerm();
     std::unique_ptr<Expr> parseFactor();
