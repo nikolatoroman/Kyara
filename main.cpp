@@ -55,7 +55,11 @@ int main() {
     }*/
 
     //Deo za testiranje parsera
-    std::string source = "let x = 5 + 2;";
+   std::string source =
+    "fn main() {"
+    "let x = add(5, 10);"
+    "return x;"
+    "}";
 
     Lexer lexer(source);
 
@@ -63,9 +67,8 @@ int main() {
 
     Parser parser(tokens);
 
-    auto ast = parser.parse();
+    Program program = parser.parse();
 
-    ast->print();    
-    
+    program.print();
     return 0;
 }
