@@ -3,10 +3,12 @@
 #include <memory>
 #include <string>
 #include <iostream>
+#include <vector>
 
-\\ Abstract Syntax tree klase
+//Abstract Syntax tree klase
 
-\\Klasa za statement-e
+
+//Klasa za statement-e
 class Stmt {
 public:
     virtual ~Stmt() = default;
@@ -15,7 +17,7 @@ public:
 };
 
 
-\\Klasa za izraze
+//Klasa za izraze
 class Expr {
 public:
     virtual ~Expr() = default;
@@ -23,7 +25,7 @@ public:
     virtual void print(int indent = 0) = 0;
 };
 
-\\Numericki izrazi
+//Numericki izrazi
 class NumberExpr : public Expr {
 public:
     int value;
@@ -46,7 +48,7 @@ public:
 };
 
 
-\\Izrazi sa promenjivama
+//Izrazi sa promenjivama
 class VariableExpr : public Expr {
 public:
     std::string name;
@@ -68,7 +70,7 @@ public:
 };
 
 
-\\Binarni izrazi
+//Binarni izrazi
 class BinaryExpr : public Expr {
 public:
     char op;
@@ -101,7 +103,7 @@ public:
     }
 };
 
-\\Klasa koja omogucava deklaraciju promenjivim
+//Klasa koja omogucava deklaraciju promenjivim
 class VarDeclStmt : public Stmt {
 public:
     std::string name;
@@ -127,5 +129,136 @@ public:
             << std::endl;
 
         initializer->print(indent + 2);
+    }
+
+};
+
+
+//klasa za dodelu vrednosti
+class AssignStmt : public Stmt {
+public:
+    std::string name;
+    std::unique_ptr<Expr> value;
+
+    AssignStmt(
+        const std::string& n,
+        std::unique_ptr<Expr> v
+    )
+        : name(n),
+          value(std::move(v)) {}
+
+    void print(int indent = 0) override {
+
+        for (int i = 0; i < indent; i++)
+            std::cout << " ";
+
+        std::cout
+            << "AssignStmt("
+            << name
+            << ")"
+            << std::endl;
+
+        value->print(indent + 2);
+    }
+};
+
+
+ // Klasa koja omogucava da se kompajluje vise izraza od jednom
+class Program {
+public:
+    std::vector<std::unique_ptr<Stmt>> statements;
+
+    void print() {
+
+        std::cout << "Program" << std::endl;
+
+        for (auto& stmt : statements) {
+            stmt->print(2);
+        }
+    }
+};
+
+// Klasa za Return statement
+class ReturnStmt : public Stmt {
+public:
+    std::unique_ptr<Expr> value;
+
+    ReturnStmt(std::unique_ptr<Expr> val)
+        : value(std::move(val)) {}
+
+    void print(int indent = 0) override {
+
+        for (int i = 0; i < indent; i++)
+            std::cout << " ";
+
+        std::cout << "ReturnStmt" << std::endl;
+
+        value->print(indent + 2);
+    }
+};
+
+// Klasa za deklarisanje funkcija, sa parametrima
+class FunctionDecl : public Stmt {
+public:
+    std::string name;
+    std::vector<std::string> parameters;
+    std::vector<std::unique_ptr<Stmt>> body;
+
+    FunctionDecl(
+        const std::string& n,
+        std::vector<std::string> params,
+        std::vector<std::unique_ptr<Stmt>> b
+    )
+        : name(n),
+          parameters(std::move(params)),
+          body(std::move(b)) {}
+
+    void print(int indent = 0) override {
+
+        for (int i = 0; i < indent; i++)
+            std::cout << " ";
+
+        std::cout << "FunctionDecl(" << name << ")" << std::endl;
+
+        for (int i = 0; i < indent + 2; i++)
+            std::cout << " ";
+
+        std::cout << "Parameters:";
+
+        for (const auto& param : parameters) {
+            std::cout << " " << param;
+        }
+
+        std::cout << std::endl;
+
+        for (auto& stmt : body) {
+            stmt->print(indent + 2);
+        }
+    }
+};
+
+// Klasa koja omogucava poziv funkcije, npr x = zbir(a, b);
+class CallExpr : public Expr {
+public:
+    std::string callee;
+    std::vector<std::unique_ptr<Expr>> arguments;
+
+    CallExpr(
+        const std::string& c,
+        std::vector<std::unique_ptr<Expr>> args
+    )
+        : callee(c),
+          arguments(std::move(args)) {}
+
+    void print(int indent = 0) override {
+
+        for (int i = 0; i < indent; i++)
+            std::cout << " ";
+
+        std::cout << "CallExpr(" << callee << ")" << std::endl;
+
+        for (auto& arg : arguments) {
+            arg->print(indent + 2);
+        }
     }
 };
