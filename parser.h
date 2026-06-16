@@ -20,6 +20,7 @@ private:
 
     void advance();
 
+    std::unique_ptr<Stmt> parseIf();
     std::vector<std::unique_ptr<Expr>> parseArguments();
     std::vector<std::string> parseParameters();
     std::unique_ptr<Stmt> parseFunctionDecl();

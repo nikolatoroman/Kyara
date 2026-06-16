@@ -182,6 +182,9 @@ std::unique_ptr<Stmt> Parser::parseStatement() {
     if (currentToken.type == TokenType::IDENTIFIER)
         return parseAssignment();
 
+    if (currentToken.type == TokenType::IF)
+    return parseIf();
+
     return nullptr;
 }
 
@@ -368,4 +371,27 @@ std::vector<std::unique_ptr<Expr>> Parser::parseArguments() {
     }
 
     return arguments;
+}
+
+//Implementacija klase za grananje
+std::unique_ptr<Stmt> Parser::parseIf() {
+
+    advance(); // skip if
+
+    auto condition = parseExpression();
+
+    auto thenBody = parseBlock();
+
+    std::vector<std::unique_ptr<Stmt>> elseBody;
+
+    if (currentToken.type == TokenType::ELSE) {
+        advance();
+        elseBody = parseBlock();
+    }
+
+    return std::make_unique<IfStmt>(
+        std::move(condition),
+        std::move(thenBody),
+        std::move(elseBody)
+    );
 }

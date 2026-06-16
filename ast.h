@@ -237,6 +237,57 @@ public:
     }
 };
 
+
+// Klasa koja omogucava IF grananje
+class IfStmt : public Stmt {
+public:
+    std::unique_ptr<Expr> condition;
+    std::vector<std::unique_ptr<Stmt>> thenBody;
+    std::vector<std::unique_ptr<Stmt>> elseBody;
+
+    IfStmt(
+        std::unique_ptr<Expr> cond,
+        std::vector<std::unique_ptr<Stmt>> thenStmts,
+        std::vector<std::unique_ptr<Stmt>> elseStmts
+    )
+        : condition(std::move(cond)),
+          thenBody(std::move(thenStmts)),
+          elseBody(std::move(elseStmts)) {}
+
+    void print(int indent = 0) override {
+
+        for (int i = 0; i < indent; i++)
+            std::cout << " ";
+
+        std::cout << "IfStmt" << std::endl;
+
+        for (int i = 0; i < indent + 2; i++)
+            std::cout << " ";
+
+        std::cout << "Condition:" << std::endl;
+
+        condition->print(indent + 4);
+
+        for (int i = 0; i < indent + 2; i++)
+            std::cout << " ";
+
+        std::cout << "Then:" << std::endl;
+
+        for (auto& stmt : thenBody)
+            stmt->print(indent + 4);
+
+        if (!elseBody.empty()) {
+            for (int i = 0; i < indent + 2; i++)
+                std::cout << " ";
+
+            std::cout << "Else:" << std::endl;
+
+            for (auto& stmt : elseBody)
+                stmt->print(indent + 4);
+        }
+    }
+};
+
 // Klasa koja omogucava poziv funkcije, npr x = zbir(a, b);
 class CallExpr : public Expr {
 public:
@@ -262,3 +313,4 @@ public:
         }
     }
 };
+
