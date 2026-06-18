@@ -105,8 +105,40 @@ std::vector<Token> Lexer::tokenize() {
                 break;
 
             case '-':
-                tokens.push_back(Token(TokenType::MINUS));
+                if (peek() == '=') {
+                    advance();
+                    tokens.push_back(Token(TokenType::EQUAL_EQUAL));
+                } else {
+                    tokens.push_back(Token(TokenType::EQUAL));
+                }
                 break;
+
+            case '!':
+                if (peek() == '=') {
+                    advance();
+                    tokens.push_back(Token(TokenType::BANG_EQUAL));
+                } else {
+                    tokens.push_back(Token(TokenType::INVALID, "!"));
+                }
+                break;
+
+            case '<':
+                if (peek() == '=') {
+                    advance();
+                    tokens.push_back(Token(TokenType::LESS_EQUAL));
+                } else {
+                    tokens.push_back(Token(TokenType::LESS));
+                }
+                break;
+
+            case '>':
+                if (peek() == '=') {
+                    advance();
+                    tokens.push_back(Token(TokenType::GREATER_EQUAL));
+                } else {
+                    tokens.push_back(Token(TokenType::GREATER));
+                }
+                break;    
 
             case '*':
                 tokens.push_back(Token(TokenType::STAR));
