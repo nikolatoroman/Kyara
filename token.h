@@ -1,5 +1,4 @@
 #pragma once
-
 #include <string>
 
 //Ovde se definisu kljucne reci i operatori jezika
@@ -27,6 +26,12 @@ enum class TokenType {
     STAR,
     SLASH,
     EQUAL,
+    EQUAL_EQUAL,
+    BANG_EQUAL,
+    LESS,
+    LESS_EQUAL,
+    GREATER,
+    GREATER_EQUAL,
 
     // Simboli
     LPAREN,

@@ -20,6 +20,9 @@ private:
 
     void advance();
 
+    std::unique_ptr<Expr> parseComparison();
+    std::unique_ptr<Expr> parseAddition();
+    std::unique_ptr<Stmt> parseWhile();
     std::unique_ptr<Stmt> parseIf();
     std::vector<std::unique_ptr<Expr>> parseArguments();
     std::vector<std::string> parseParameters();

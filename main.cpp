@@ -25,6 +25,12 @@ std::string tokenTypeToString(TokenType type) {
         case TokenType::RBRACE: return "RBRACE";
         case TokenType::COMMA: return "COMMA";
         case TokenType::MINUS: return "MINUS";
+        case TokenType::EQUAL_EQUAL: return "EQUAL_EQUAL";
+        case TokenType::BANG_EQUAL: return "BANG_EQUAL";
+        case TokenType::LESS: return "LESS";
+        case TokenType::LESS_EQUAL: return "LESS_EQUAL";
+        case TokenType::GREATER: return "GREATER";
+        case TokenType::GREATER_EQUAL: return "GREATER_EQUAL";
         default: return "OTHER";
     }
 }
@@ -55,12 +61,16 @@ int main() {
     }*/
 
     //Deo za testiranje parsera
-   std::string source =
+  std::string source =
     "fn main() {"
-    "let x = add(5, 10);"
-    "return x;"
+    "let x = 5;"
+    "if x >= 3 {"
+    "return 1;"
+    "} else {"
+    "return 0;"
+    "}"
     "}";
-
+    
     Lexer lexer(source);
 
     auto tokens = lexer.tokenize();
