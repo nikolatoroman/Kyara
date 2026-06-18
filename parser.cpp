@@ -62,10 +62,10 @@ std::unique_ptr<Expr> Parser::parseTerm() {
         currentToken.type == TokenType::STAR ||
         currentToken.type == TokenType::SLASH
     ) {
-        char op =
+        std::string op =
             currentToken.type == TokenType::STAR
-            ? '*'
-            : '/';
+            ? "*"
+            : "/";
 
         advance();
         auto right = parseFactor();
@@ -80,9 +80,13 @@ std::unique_ptr<Expr> Parser::parseTerm() {
     return left;
 }
 
-//Parsuje sabiranje i oduzimanje,
-//I postavlja ih ispod mnozenje/deljenja u AST-u
 std::unique_ptr<Expr> Parser::parseExpression() {
+    return parseComparison();
+}
+
+
+//Parsuje sabiranje i oduzimanje
+std::unique_ptr<Expr> Parser::parseAddition() {
 
     auto left = parseTerm();
 
@@ -90,13 +94,54 @@ std::unique_ptr<Expr> Parser::parseExpression() {
         currentToken.type == TokenType::PLUS ||
         currentToken.type == TokenType::MINUS
     ) {
-        char op =
+        std::string op =
             currentToken.type == TokenType::PLUS
-            ? '+'
-            : '-';
+            ? "+"
+            : "-";
 
         advance();
+
         auto right = parseTerm();
+
+        left = std::make_unique<BinaryExpr>(
+            op,
+            std::move(left),
+            std::move(right)
+        );
+    }
+
+    return left;
+}
+
+//parsuje operatore logike i poredjenja
+std::unique_ptr<Expr> Parser::parseComparison() {
+
+    auto left = parseAddition();
+
+    while (
+        currentToken.type == TokenType::EQUAL_EQUAL ||
+        currentToken.type == TokenType::BANG_EQUAL ||
+        currentToken.type == TokenType::LESS ||
+        currentToken.type == TokenType::LESS_EQUAL ||
+        currentToken.type == TokenType::GREATER ||
+        currentToken.type == TokenType::GREATER_EQUAL
+    ) {
+        std::string op;
+
+        switch (currentToken.type) {
+            case TokenType::EQUAL_EQUAL: op = "=="; break;
+            case TokenType::BANG_EQUAL: op = "!="; break;
+            case TokenType::LESS: op = "<"; break;
+            case TokenType::LESS_EQUAL: op = "<="; break;
+            case TokenType::GREATER: op = ">"; break;
+            case TokenType::GREATER_EQUAL: op = ">="; break;
+            default: op = "?"; break;
+        }
+
+        advance();
+
+        auto right = parseAddition();
+
         left = std::make_unique<BinaryExpr>(
             op,
             std::move(left),
@@ -126,6 +171,8 @@ Program Parser::parse() {
 
     return program;
 }
+
+
 
 //Parsuje deklaraciju promenjivih
 std::unique_ptr<Stmt> Parser::parseVarDecl() {
@@ -184,6 +231,9 @@ std::unique_ptr<Stmt> Parser::parseStatement() {
 
     if (currentToken.type == TokenType::IF)
     return parseIf();
+
+    if (currentToken.type == TokenType::WHILE)
+    return parseWhile();
 
     return nullptr;
 }
@@ -393,5 +443,20 @@ std::unique_ptr<Stmt> Parser::parseIf() {
         std::move(condition),
         std::move(thenBody),
         std::move(elseBody)
+    );
+}
+
+//Implementacija While petlje
+std::unique_ptr<Stmt> Parser::parseWhile() {
+
+    advance(); // skip while
+
+    auto condition = parseExpression();
+
+    auto body = parseBlock();
+
+    return std::make_unique<WhileStmt>(
+        std::move(condition),
+        std::move(body)
     );
 }
