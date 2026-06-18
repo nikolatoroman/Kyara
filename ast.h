@@ -73,13 +73,13 @@ public:
 //Binarni izrazi
 class BinaryExpr : public Expr {
 public:
-    char op;
+    std::string op;
 
     std::unique_ptr<Expr> left;
     std::unique_ptr<Expr> right;
 
     BinaryExpr(
-        char oper,
+        const std::string& oper,
         std::unique_ptr<Expr> lhs,
         std::unique_ptr<Expr> rhs
     )
@@ -89,17 +89,17 @@ public:
 
     void print(int indent = 0) override {
 
-    for (int i = 0; i < indent; i++)
-        std::cout << " ";
+        for (int i = 0; i < indent; i++)
+            std::cout << " ";
 
-    std::cout
-        << "BinaryExpr("
-        << op
-        << ")"
-        << std::endl;
+        std::cout
+            << "BinaryExpr("
+            << op
+            << ")"
+            << std::endl;
 
-    left->print(indent + 2);
-    right->print(indent + 2);
+        left->print(indent + 2);
+        right->print(indent + 2);
     }
 };
 
@@ -314,3 +314,39 @@ public:
     }
 };
 
+//Klasa koja omogucaca koriscenje while petlje
+class WhileStmt : public Stmt {
+public:
+    std::unique_ptr<Expr> condition;
+    std::vector<std::unique_ptr<Stmt>> body;
+
+    WhileStmt(
+        std::unique_ptr<Expr> cond,
+        std::vector<std::unique_ptr<Stmt>> stmts
+    )
+        : condition(std::move(cond)),
+          body(std::move(stmts)) {}
+
+    void print(int indent = 0) override {
+
+        for (int i = 0; i < indent; i++)
+            std::cout << " ";
+
+        std::cout << "WhileStmt" << std::endl;
+
+        for (int i = 0; i < indent + 2; i++)
+            std::cout << " ";
+
+        std::cout << "Condition:" << std::endl;
+
+        condition->print(indent + 4);
+
+        for (int i = 0; i < indent + 2; i++)
+            std::cout << " ";
+
+        std::cout << "Body:" << std::endl;
+
+        for (auto& stmt : body)
+            stmt->print(indent + 4);
+    }
+};
